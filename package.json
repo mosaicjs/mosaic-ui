@@ -36,7 +36,6 @@
     "webpack": "^1.10.1"
   },
   "dependencies": {
-    "mosaic-dataset": "^0.1.10",
     "promise": "^7.0.3",
     "react": "^0.13.3"
   }
