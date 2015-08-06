@@ -1,6 +1,6 @@
 {
   "name": "mosaic-ui",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Default UI classes",
   "main": "index.js",
   "scripts": {
