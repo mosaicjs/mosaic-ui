@@ -151,6 +151,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'componentWillUnmount',
 	        value: function componentWillUnmount() {
+	            _get(Object.getPrototypeOf(DataSetLayout.prototype), 'componentWillUnmount', this).call(this);
 	            this._triggerListeners('removeListener');
 	        }
 	    }, {
@@ -222,6 +223,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    _createClass(ViewLayout, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            this._mounted = true;
+	        }
+	    }, {
+	        key: 'componentWillUnmount',
+	        value: function componentWillUnmount() {
+	            this._mounted = false;
+	        }
+	    }, {
 	        key: '_newState',
 	        value: function _newState() {
 	            for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
@@ -233,7 +244,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: '_updateState',
 	        value: function _updateState() {
-	            this.setState(this._newState.apply(this, arguments));
+	            if (this._mounted) {
+	                this.setState(this._newState.apply(this, arguments));
+	            }
+	        }
+	    }, {
+	        key: 'mounted',
+	        get: function get() {
+	            return this._mounted;
 	        }
 	    }]);
 
@@ -264,22 +282,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    _createClass(Utils, null, [{
 	        key: "extend",
-	        value: function extend() {
-	            var result = {};
-
-	            for (var _len = arguments.length, params = Array(_len), _key = 0; _key < _len; _key++) {
-	                params[_key] = arguments[_key];
+	        value: function extend(to) {
+	            for (var _len = arguments.length, from = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+	                from[_key - 1] = arguments[_key];
 	            }
 
-	            params.forEach(function (param) {
+	            from.forEach(function (param) {
 	                if (!param) return;
 	                for (var key in param) {
 	                    if (param.hasOwnProperty(key)) {
-	                        result[key] = param[key];
+	                        to[key] = param[key];
 	                    }
 	                }
 	            });
-	            return result;
+	            return to;
 	        }
 	    }, {
 	        key: "debounce",
@@ -326,14 +342,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 	var View = (function () {
-	    function View() {
+	    function View(options, data) {
 	        _classCallCheck(this, View);
+
+	        this.props = this.options = options;
+	        this.object = data;
 	    }
 
 	    _createClass(View, [{
+	        key: '_newId',
+	        value: function _newId() {
+	            var id = this._newId.counter = (this._newId.counter || 0) + 1;
+	            return 'id-' + id;
+	        }
+	    }, {
 	        key: 'renderView',
 	        value: function renderView() {
-	            throw new Error('Not implemented');
+	            throw new Error('Not implemented.');
+	        }
+	    }, {
+	        key: 'className',
+	        get: function get() {
+	            return this.props.className;
+	        }
+	    }, {
+	        key: 'style',
+	        get: function get() {
+	            return this.props.style;
 	        }
 	    }]);
 
