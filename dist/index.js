@@ -66,11 +66,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _libDataSetLayout2 = _interopRequireDefault(_libDataSetLayout);
 
+	var _libDialogBox = __webpack_require__(5);
+
+	var _libDialogBox2 = _interopRequireDefault(_libDialogBox);
+
 	var _libUtils = __webpack_require__(4);
 
 	var _libUtils2 = _interopRequireDefault(_libUtils);
 
-	var _libView = __webpack_require__(5);
+	var _libView = __webpack_require__(6);
 
 	var _libView2 = _interopRequireDefault(_libView);
 
@@ -80,6 +84,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports['default'] = {
 	    DataSetLayout: _libDataSetLayout2['default'],
+	    DialogBox: _libDialogBox2['default'],
 	    Utils: _libUtils2['default'],
 	    View: _libView2['default'],
 	    ViewLayout: _libViewLayout2['default']
@@ -329,6 +334,177 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function deferred(method, time, context) {
+	    var id = undefined;
+	    time = time || 10;
+	    context = context || this;
+	    return function () {
+	        for (var _len = arguments.length, params = Array(_len), _key = 0; _key < _len; _key++) {
+	            params[_key] = arguments[_key];
+	        }
+
+	        if (id) {
+	            clearTimeout(id);
+	            id = 0;
+	        }
+	        id = setTimeout(function () {
+	            id = 0;
+	            method.call.apply(method, [context].concat(params));
+	        }, time);
+	    };
+	}
+
+	var DialogBox = (function () {
+	    function DialogBox(mountNode) {
+	        _classCallCheck(this, DialogBox);
+
+	        this.mountNode = mountNode;
+	    }
+
+	    _createClass(DialogBox, [{
+	        key: "_onStateUpdate",
+	        value: function _onStateUpdate(state) {
+	            this._state = state;
+	        }
+	    }, {
+	        key: "show",
+	        value: function show() {
+	            setTimeout((function () {
+	                _react2["default"].render(this.view, this.mountNode);
+	            }).bind(this), 1);
+	            return this;
+	        }
+	    }, {
+	        key: "close",
+	        value: function close() {
+	            _react2["default"].unmountComponentAtNode(this.mountNode);
+	            return this;
+	        }
+	    }, {
+	        key: "setContent",
+	        value: function setContent(state) {
+	            this._onStateUpdate(state);
+	        }
+	    }], [{
+	        key: "show",
+	        value: function show(mountNode) {
+	            var dialogBox = new DialogBox(mountNode);
+
+	            var DialogBoxView = (function (_React$Component) {
+	                _inherits(DialogBoxView, _React$Component);
+
+	                function DialogBoxView() {
+	                    _classCallCheck(this, DialogBoxView);
+
+	                    for (var _len2 = arguments.length, params = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+	                        params[_key2] = arguments[_key2];
+	                    }
+
+	                    _get(Object.getPrototypeOf(DialogBoxView.prototype), "constructor", this).apply(this, params);
+	                    this.state = this.props.box._state;
+	                    delete this.props.box._state;
+	                    this.props.box._onStateUpdate = this._onStateUpdate.bind(this);
+	                }
+
+	                _createClass(DialogBoxView, [{
+	                    key: "_onStateUpdate",
+	                    value: function _onStateUpdate(fields) {
+	                        this.setState(fields);
+	                        this.forceUpdate();
+	                    }
+	                }, {
+	                    key: "render",
+	                    value: function render() {
+	                        var header = undefined,
+	                            body = undefined,
+	                            footer = undefined;
+	                        if (this.state.footer) {
+	                            footer = _react2["default"].createElement(
+	                                "div",
+	                                { className: "modal-footer" },
+	                                this.state.footer
+	                            );
+	                        }
+	                        if (this.state.body) {
+	                            body = _react2["default"].createElement(
+	                                "div",
+	                                { className: "modal-body" },
+	                                this.state.body
+	                            );
+	                        }
+	                        if (this.state.header) {
+	                            header = _react2["default"].createElement(
+	                                "div",
+	                                { className: "modal-header" },
+	                                this.state.header
+	                            );
+	                        } else if (this.state.title) {
+	                            header = _react2["default"].createElement(
+	                                "div",
+	                                { className: "modal-header" },
+	                                _react2["default"].createElement(
+	                                    "h4",
+	                                    { className: "modal-title" },
+	                                    this.state.title
+	                                )
+	                            );
+	                        }
+	                        return _react2["default"].createElement(
+	                            "div",
+	                            { className: "modal", style: { display: 'block' } },
+	                            _react2["default"].createElement(
+	                                "div",
+	                                { className: "modal-dialog" },
+	                                _react2["default"].createElement(
+	                                    "div",
+	                                    { className: "modal-content" },
+	                                    header,
+	                                    body,
+	                                    footer
+	                                )
+	                            )
+	                        );
+	                    }
+	                }]);
+
+	                return DialogBoxView;
+	            })(_react2["default"].Component);
+
+	            dialogBox.view = _react2["default"].createElement(DialogBoxView, { box: dialogBox });
+	            return dialogBox.show();
+	        }
+	    }]);
+
+	    return DialogBox;
+	})();
+
+	exports["default"] = DialogBox;
+	module.exports = exports["default"];
+
+/***/ },
+/* 6 */
 /***/ function(module, exports) {
 
 	'use strict';
