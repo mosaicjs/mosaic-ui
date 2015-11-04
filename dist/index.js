@@ -70,11 +70,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _libDialogBox2 = _interopRequireDefault(_libDialogBox);
 
+	var _libPopupPanel = __webpack_require__(151);
+
+	var _libPopupPanel2 = _interopRequireDefault(_libPopupPanel);
+
+	var _libProgressBar = __webpack_require__(152);
+
+	var _libProgressBar2 = _interopRequireDefault(_libProgressBar);
+
 	var _libUtils = __webpack_require__(4);
 
 	var _libUtils2 = _interopRequireDefault(_libUtils);
 
-	var _libView = __webpack_require__(151);
+	var _libView = __webpack_require__(153);
 
 	var _libView2 = _interopRequireDefault(_libView);
 
@@ -86,6 +94,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    DataSetLayout: _libDataSetLayout2['default'],
 	    DialogBox: _libDialogBox2['default'],
 	    Utils: _libUtils2['default'],
+	    PopupPanel: _libPopupPanel2['default'],
+	    ProgressBar: _libProgressBar2['default'],
 	    View: _libView2['default'],
 	    ViewLayout: _libViewLayout2['default']
 	};
@@ -19066,6 +19076,481 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 151 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(6);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	var PopupPanel = (function () {
+	    _createClass(PopupPanel, null, [{
+	        key: '_generatePopupId',
+	        value: function _generatePopupId() {
+	            this._idCounter = (this._idCounter || 0) + 1;
+	            return 'popup-id-' + this._idCounter;
+	        }
+	    }, {
+	        key: 'instance',
+	        get: function get() {
+	            if (!this._instance) {
+	                this._instance = new PopupPanel();
+	            }
+	            return this._instance;
+	        }
+	    }]);
+
+	    function PopupPanel(options) {
+	        _classCallCheck(this, PopupPanel);
+
+	        this.options = options || {};
+	        this.stack = [];
+	        this.index = {};
+	    }
+
+	    _createClass(PopupPanel, [{
+	        key: 'closePopup',
+	        value: function closePopup(options) {
+	            options = options || {};
+	            var id = options.id;
+	            if (!id && this.stack.length) {
+	                var _div = this.stack.pop();
+	                id = _div.id;
+	            }
+	            var div = this.index[id];
+	            if (div) {
+	                var stack = [];
+	                var i = undefined,
+	                    len = undefined;
+	                for (i = 0, len = this.stack.length; i < len; i++) {
+	                    var _div2 = this.stack[i];
+	                    if (_div2.id !== id) {
+	                        stack.push(_div2);
+	                    } else {
+	                        break;
+	                    }
+	                }
+	                for (; i < len; i++) {
+	                    var _div3 = this.stack[i];
+	                    delete this.index[_div3.id];
+	                    _reactDom2['default'].unmountComponentAtNode(_div3);
+	                    if (_div3.parentNode) {
+	                        _div3.parentNode.removeChild(_div3);
+	                    }
+	                }
+	                this.stack = stack;
+	            }
+	        }
+	    }, {
+	        key: 'openPopup',
+	        value: function openPopup(options) {
+	            var div = document.createElement('div');
+	            var id = div.id = PopupPanel._generatePopupId();
+	            this.popupContainer.appendChild(div);
+	            this.stack.push(div);
+	            this.index[id] = div;
+	            _reactDom2['default'].render(_react2['default'].createElement(PopupPanelView, _extends({ key: "", popup: this }, options)), div);
+	            return id;
+	        }
+	    }, {
+	        key: 'divStack',
+	        get: function get() {
+	            if (!this._divStack) {
+	                this._divStack = [];
+	            }
+	            return this._divStack;
+	        }
+	    }, {
+	        key: 'popupContainer',
+	        get: function get() {
+	            if (!this._popupContainer) {
+	                this._popupContainer = document.body;
+	            }
+	            return this._popupContainer;
+	        },
+	        set: function set(container) {
+	            this._popupContainer = container;
+	        }
+	    }]);
+
+	    return PopupPanel;
+	})();
+
+	exports['default'] = PopupPanel;
+
+	var PopupPanelView = (function (_React$Component) {
+	    _inherits(PopupPanelView, _React$Component);
+
+	    function PopupPanelView() {
+	        _classCallCheck(this, PopupPanelView);
+
+	        for (var _len = arguments.length, params = Array(_len), _key = 0; _key < _len; _key++) {
+	            params[_key] = arguments[_key];
+	        }
+
+	        _get(Object.getPrototypeOf(PopupPanelView.prototype), 'constructor', this).apply(this, params);
+	        this._updatePopupHeight = this._updatePopupHeight.bind(this);
+	        this._onKeyDown = this._onKeyDown.bind(this);
+	        this.state = {};
+	    }
+
+	    _createClass(PopupPanelView, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            this.mounted = true;
+	            window.addEventListener('resize', this._updatePopupHeight);
+	            document.addEventListener('keydown', this._onKeyDown);
+	            var that = this;
+	            this.updateHeight(function () {
+	                if (typeof that.props.onOpen === 'function') {
+	                    that.props.onOpen(that);
+	                }
+	            });
+	            // Change the default Bootstrap settings
+	            var elm = _reactDom2['default'].findDOMNode(this.refs.dialog);
+	            elm.style.marginTop = '0px';
+	            elm.style.marginBottom = '0px';
+	        }
+	    }, {
+	        key: 'componentDidUpdate',
+	        value: function componentDidUpdate() {
+	            this._updatePopupHeight();
+	        }
+	    }, {
+	        key: 'componentWillUnmount',
+	        value: function componentWillUnmount() {
+	            this.mounted = false;
+	            window.removeEventListener('resize', this._updatePopupHeight);
+	            document.removeEventListener('keydown', this._onKeyDown);
+	            if (typeof this.props.onClose === 'function') {
+	                this.props.onClose(this);
+	            }
+	        }
+	    }, {
+	        key: '_onKeyDown',
+	        value: function _onKeyDown(event) {
+	            if (!this.props.disableEsc && event.which == 27) {
+	                // ESC
+	                this._closePopup();
+	            }
+	        }
+	    }, {
+	        key: '_updatePopupHeight',
+	        value: function _updatePopupHeight() {
+	            this.updateHeight();
+	        }
+	    }, {
+	        key: 'updateHeight',
+	        value: function updateHeight(callback) {
+	            var _this = this;
+
+	            if (!this.mounted) return;
+	            var containerElm = _reactDom2['default'].findDOMNode(this);
+	            if (!containerElm) return;
+	            var innerBorderElm = _reactDom2['default'].findDOMNode(this.refs.innerBorder);
+	            var outerBorderElm = _reactDom2['default'].findDOMNode(this.refs.outerBorder);
+	            var containerHeight = containerElm.offsetHeight;
+	            var outerHeight = outerBorderElm.offsetHeight;
+	            var contentPosition = //
+	            this._getPosition(innerBorderElm, outerBorderElm);
+	            var contentHeight = innerBorderElm.offsetHeight;
+	            var before = contentPosition.top;
+	            var after = outerHeight - (before + contentHeight);
+	            var margin = this.props.verticalMargin || 0;
+	            var height = containerHeight - (before + after) - margin * 2;
+	            height = Math.max(height, 0);
+	            if (this.props.maxHeight) {
+	                height = Math.min(this.props.maxHeight, height);
+	            }
+	            if (!isNaN(height) && this.state.maxHeight !== height) {
+	                (function () {
+	                    innerBorderElm.style.maxHeight = height + 'px';
+	                    var that = _this;
+	                    setTimeout(function () {
+	                        var containerHeight = containerElm.offsetHeight;
+	                        var dialogElm = _reactDom2['default'].findDOMNode(that.refs.dialog);
+	                        if (dialogElm) {
+	                            var dialogHeight = dialogElm.offsetHeight;
+	                            var pos = Math.round((containerHeight - dialogHeight) / 2);
+	                            pos = Math.max(pos, 0);
+	                            dialogElm.style.top = pos + 'px';
+	                        }
+	                        if (callback) {
+	                            callback();
+	                        }
+	                    }, 1);
+	                })();
+	            } else {
+	                if (callback) {
+	                    callback();
+	                }
+	            }
+	        }
+	    }, {
+	        key: '_newState',
+	        value: function _newState(options) {
+	            var state = {};
+	            if (this.state) {
+	                for (var key in this.state) {
+	                    state[key] = this.state[key];
+	                }
+	            }
+	            if (options) {
+	                for (var key in options) {
+	                    state[key] = options[key];
+	                }
+	            }
+	            return state;
+	        }
+	    }, {
+	        key: '_handleClose',
+	        value: function _handleClose(force, ev) {
+	            ev.stopPropagation();
+	            ev.preventDefault();
+	            if (this.props.disableEsc && !force) return;
+	            var onClose = this.props.onClose;
+	            var close = true;
+	            if (typeof onClose === 'function') {
+	                var result = onClose(ev);
+	                close = result !== false;
+	            }
+	            if (close) {
+	                this._closePopup();
+	            }
+	        }
+	    }, {
+	        key: '_closePopup',
+	        value: function _closePopup() {
+	            this.props.popup.closePopup(this.props);
+	        }
+	    }, {
+	        key: '_getPosition',
+	        value: function _getPosition(el, parent) {
+	            var _x = 0;
+	            var _y = 0;
+	            while (el && el !== parent && !isNaN(el.offsetLeft) && //
+	            !isNaN(el.offsetTop)) {
+	                _x += el.offsetLeft - el.scrollLeft;
+	                _y += el.offsetTop - el.scrollTop;
+	                el = el.offsetParent;
+	            }
+	            return {
+	                top: _y,
+	                left: _x
+	            };
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var className = this.props.className || '';
+	            className = "modal-dialog " + className;
+	            var modalHeader = undefined;
+	            if (this.props.title !== undefined) {
+	                var closeBtn = undefined;
+	                if (this.props.closeButton) {
+	                    closeBtn = _react2['default'].createElement(
+	                        'button',
+	                        { type: "button", className: "close",
+	                            onClick: this._handleClose.bind(this, true) },
+	                        _react2['default'].createElement(
+	                            'span',
+	                            { 'area-hidden': "true" },
+	                            '×'
+	                        ),
+	                        _react2['default'].createElement(
+	                            'span',
+	                            { className: "sr-only" },
+	                            'Close'
+	                        )
+	                    );
+	                }
+	                modalHeader = _react2['default'].createElement(
+	                    'div',
+	                    { className: "modal-header" },
+	                    closeBtn,
+	                    _react2['default'].createElement(
+	                        'h4',
+	                        { className: "modal-title" },
+	                        this.props.title
+	                    )
+	                );
+	            }
+	            var modalFooter = undefined;
+	            if (this.props.footer !== undefined) {
+	                modalFooter = _react2['default'].createElement(
+	                    'div',
+	                    { className: "modal-footer" },
+	                    this.props.footer
+	                );
+	            }
+	            var backdropStyle = { zIndex: 1040 };
+	            var dialogStyle = { zIndex: 1050 };
+	            return _react2['default'].createElement(
+	                'div',
+	                { className: "modal in", 'tab-index': "-1", role: "dialog", ref: "container", style: { display: 'block' } },
+	                _react2['default'].createElement(
+	                    'div',
+	                    { className: className, ref: "dialog", style: dialogStyle },
+	                    _react2['default'].createElement(
+	                        'div',
+	                        { className: "modal-content", ref: "outerBorder" },
+	                        modalHeader,
+	                        _react2['default'].createElement(
+	                            'div',
+	                            { className: "modal-body", ref: "innerBorder" },
+	                            this.props.body
+	                        ),
+	                        modalFooter
+	                    )
+	                ),
+	                _react2['default'].createElement('div', { className: "modal-backdrop in", style: backdropStyle, onClick: this._handleClose.bind(this, false) })
+	            );
+	        }
+	    }]);
+
+	    return PopupPanelView;
+	})(_react2['default'].Component);
+
+	module.exports = exports['default'];
+
+/***/ },
+/* 152 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(6);
+
+	/**
+	 * This progress listens the 'progress' event emitted by the 'events' tag
+	 * parameter. The expected fields in each event are: 'pos' - the current
+	 * progress position; 'len' - the total length of the progress
+	 */
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	var ProgressBar = (function (_React$Component) {
+	    _inherits(ProgressBar, _React$Component);
+
+	    function ProgressBar() {
+	        _classCallCheck(this, ProgressBar);
+
+	        for (var _len = arguments.length, params = Array(_len), _key = 0; _key < _len; _key++) {
+	            params[_key] = arguments[_key];
+	        }
+
+	        _get(Object.getPrototypeOf(ProgressBar.prototype), 'constructor', this).apply(this, params);
+	        this._onProgress = this._onProgress.bind(this);
+	        this.state = { progress: 0 };
+	    }
+
+	    _createClass(ProgressBar, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            var that = this;
+	            this.props.events.addListener(this.progressEvent, this._onProgress);
+	        }
+	    }, {
+	        key: 'componentWillUnmount',
+	        value: function componentWillUnmount() {
+	            this.props.events.removeListener(this.progressEvent, this._onProgress);
+	        }
+	    }, {
+	        key: '_onProgress',
+	        value: function _onProgress(ev) {
+	            var progress = Math.round(100 * ev.pos / ev.len);
+	            if (this.state.progress !== progress) {
+	                var div = _reactDom2['default'].findDOMNode(this.refs.bar);
+	                this.setState({ progress: progress });
+	                this.forceUpdate();
+	            }
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var progress = this.state.progress;
+	            var className = 'progress-bar progress-bar-success progress-bar-striped active';
+	            var transition = 'none';
+	            var style = {
+	                WebkitTransition: transition,
+	                MozTransition: transition,
+	                OTransition: transition,
+	                transition: transition,
+	                width: progress + '%'
+	            };
+	            return _react2['default'].createElement(
+	                'div',
+	                { className: "progress", key: this.props.key },
+	                _react2['default'].createElement(
+	                    'div',
+	                    { className: className, role: "progressbar", ref: "bar",
+	                        'aria-valuenow': progress,
+	                        'aria-valuemin': "0",
+	                        'aria-valuemax': "100",
+	                        style: style },
+	                    _react2['default'].createElement(
+	                        'span',
+	                        { className: "sr-only" },
+	                        progress,
+	                        '%'
+	                    )
+	                )
+	            );
+	        }
+	    }, {
+	        key: 'progressEvent',
+	        get: function get() {
+	            return this.props.progressEvent || 'progress';
+	        }
+	    }]);
+
+	    return ProgressBar;
+	})(_react2['default'].Component);
+
+	exports['default'] = ProgressBar;
+	module.exports = exports['default'];
+
+/***/ },
+/* 153 */
 /***/ function(module, exports) {
 
 	'use strict';
