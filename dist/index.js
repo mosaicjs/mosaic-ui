@@ -144,30 +144,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        _get(Object.getPrototypeOf(DataSetLayout.prototype), 'constructor', this).apply(this, params);
-	        this._reload = _Utils2['default'].debounce(this._reload.bind(this), 100);
+	        this._reload = _Utils2['default'].debounce(this._reload.bind(this), 30);
 	        this._onSetUpdates = this._onSetUpdates.bind(this);
 	    }
 
 	    _createClass(DataSetLayout, [{
-	        key: '_triggerListeners',
-	        value: function _triggerListeners(method) {
-	            var dependencies = this.props.dependencies || [];
-	            dependencies.forEach(function (set) {
-	                if (set) {
-	                    set[method]('update', this._onSetUpdates);
-	                }
-	            }, this);
-	        }
-	    }, {
 	        key: 'componentWillMount',
 	        value: function componentWillMount() {
-	            this._triggerListeners('addListener');
+	            this.dependencies.forEach(function (set) {
+	                set.addListener('update', this._onSetUpdates);
+	            }, this);
 	        }
 	    }, {
 	        key: 'componentWillUnmount',
 	        value: function componentWillUnmount() {
 	            _get(Object.getPrototypeOf(DataSetLayout.prototype), 'componentWillUnmount', this).call(this);
-	            this._triggerListeners('removeListener');
+	            this.dependencies.forEach(function (set) {
+	                set.removeListener('update', this._onSetUpdates);
+	            }, this);
 	        }
 	    }, {
 	        key: '_onSetUpdates',
@@ -180,6 +174,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: '_reload',
 	        value: function _reload() {
 	            this._updateState();
+	        }
+	    }, {
+	        key: 'dependencies',
+	        get: function get() {
+	            return this.props.dependencies || this.options.dependencies || [];
 	        }
 	    }]);
 
@@ -226,14 +225,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	var ViewLayout = (function (_React$Component) {
 	    _inherits(ViewLayout, _React$Component);
 
-	    function ViewLayout() {
+	    function ViewLayout(options) {
+	        var _get2;
+
 	        _classCallCheck(this, ViewLayout);
 
-	        for (var _len = arguments.length, params = Array(_len), _key = 0; _key < _len; _key++) {
-	            params[_key] = arguments[_key];
+	        for (var _len = arguments.length, params = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+	            params[_key - 1] = arguments[_key];
 	        }
 
-	        _get(Object.getPrototypeOf(ViewLayout.prototype), 'constructor', this).apply(this, params);
+	        (_get2 = _get(Object.getPrototypeOf(ViewLayout.prototype), 'constructor', this)).call.apply(_get2, [this, options].concat(params));
+	        this.options = options || {};
 	        this.state = this._newState();
 	    }
 
@@ -259,9 +261,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: '_updateState',
 	        value: function _updateState() {
-	            if (this._mounted) {
-	                this.setState(this._newState.apply(this, arguments));
-	            }
+	            this.setState(this._newState.apply(this, arguments));
 	        }
 	    }, {
 	        key: 'mounted',
