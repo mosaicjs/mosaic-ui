@@ -161,6 +161,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function componentDidMount() {
 	            _get(Object.getPrototypeOf(DataSetLayout.prototype), 'componentDidMount', this).call(this);
 	            this._reload();
+	            this._hash = this._calculateHash();
+	        }
+	    }, {
+	        key: 'componentDidUpdate',
+	        value: function componentDidUpdate() {
+	            this._hash = this._calculateHash();
 	        }
 	    }, {
 	        key: 'componentWillUnmount',
@@ -173,6 +179,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: '_onSetUpdates',
 	        value: function _onSetUpdates(intent) {
+	            delete this._hash;
 	            intent.then((function () {
 	                this._reload();
 	            }).bind(this));
@@ -181,6 +188,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: '_reload',
 	        value: function _reload() {
 	            this._updateState();
+	        }
+	    }, {
+	        key: 'shouldComponentUpdate',
+	        value: function shouldComponentUpdate(nextProps, nextState) {
+	            return this._hash !== this._calculateHash();
+	        }
+	    }, {
+	        key: '_calculateHash',
+	        value: function _calculateHash() {
+	            var array = [];
+	            this.dependencies.forEach(function (set) {
+	                array.push(set.id + ':' + set.version);
+	            });
+	            return array.join(';');
 	        }
 	    }, {
 	        key: 'dependencies',
