@@ -161,13 +161,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function componentDidMount() {
 	            _get(Object.getPrototypeOf(DataSetLayout.prototype), 'componentDidMount', this).call(this);
 	            this._reload();
-	            this._hash = this._calculateHash();
-	        }
-	    }, {
-	        key: 'componentDidUpdate',
-	        value: function componentDidUpdate() {
-	            _get(Object.getPrototypeOf(DataSetLayout.prototype), 'componentDidUpdate', this).call(this);
-	            this._hash = this._calculateHash();
 	        }
 	    }, {
 	        key: 'componentWillUnmount',
@@ -189,12 +182,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: '_reload',
 	        value: function _reload() {
 	            this._updateState();
-	        }
-	    }, {
-	        key: 'shouldComponentUpdate',
-	        value: function shouldComponentUpdate(nextProps, nextState) {
-	            var redraw = nextProps.forceRedraw || this._hash !== this._calculateHash();
-	            return redraw;
 	        }
 	    }, {
 	        key: '_calculateHash',
@@ -271,33 +258,35 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    _createClass(ViewLayout, [{
 	        key: 'componentWillMount',
-	        value: function componentWillMount() {
-	            this._forceRedraw = true;
-	        }
+	        value: function componentWillMount() {}
 	    }, {
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
 	            this._reload();
 	            this._hash = this._calculateHash();
-	            this._forceRedraw = false;
 	            this.mounted = true;
 	        }
 	    }, {
 	        key: 'componentWillReceiveProps',
-	        value: function componentWillReceiveProps(props) {
-	            this._forceRedraw = this.props.forceRedraw;
-	        }
+	        value: function componentWillReceiveProps(props) {}
 	    }, {
 	        key: 'componentDidUpdate',
 	        value: function componentDidUpdate() {
 	            this._hash = this._calculateHash();
-	            this._forceRedraw = false;
 	        }
 	    }, {
 	        key: 'componentWillUnmount',
 	        value: function componentWillUnmount() {
 	            this.mounted = false;
 	        }
+	    }, {
+	        key: 'shouldComponentUpdate',
+	        value: function shouldComponentUpdate(nextProps, nextState) {
+	            return nextProps.forceRedraw || !this._hash || this._hash !== this._calculateHash();
+	        }
+	    }, {
+	        key: '_calculateHash',
+	        value: function _calculateHash() {}
 	    }, {
 	        key: '_newState',
 	        value: function _newState() {
