@@ -173,7 +173,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: '_onSetUpdates',
 	        value: function _onSetUpdates(intent) {
-	            console.log('???? IA M HERE!');
 	            delete this._hash;
 	            intent.then((function () {
 	                this._reload();
@@ -19269,7 +19268,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.popupContainer.appendChild(div);
 	            this.stack.push(div);
 	            this.index[id] = div;
-	            _reactDom2['default'].render(_react2['default'].createElement(PopupPanelView, _extends({ key: '', popup: this }, options)), div);
+	            _reactDom2['default'].render(_react2['default'].createElement(PopupPanelView, _extends({ key: '', popup: this }, options, { id: id })), div);
 	            return id;
 	        }
 	    }, {
@@ -19441,7 +19440,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: '_closePopup',
 	        value: function _closePopup() {
-	            this.props.popup.closePopup(this.props);
+	            PopupPanel.instance.closePopup(this.props);
+	            //        this.props.popup.closePopup(this.props);
 	        }
 	    }, {
 	        key: '_getPosition',
